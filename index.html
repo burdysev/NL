@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0a0a12">
+<title>1 из 8 миллиардов</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{
+  width:100%;height:100%;overflow:hidden;background:#0a0a12;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
+  touch-action:manipulation;overscroll-behavior:none;
+  color:#e8e8f0;
+}
+:root{
+  --bg:#0a0a12; --card:#141420; --card2:#1c1c2e;
+  --border:rgba(255,255,255,0.07); --border-hi:rgba(255,255,255,0.16);
+  --text:#e8e8f0; --muted:#7a7a95; --dim:#4a4a60;
+  --gold:#ffc440; --green:#34d399; --red:#f87171;
+  --blue:#60a5fa; --pink:#ec4899; --purple:#a855f7; --cyan:#22d3ee;
+}
+#app{position:fixed;inset:0;overflow:hidden;background:var(--bg);max-width:500px;margin:0 auto;}
+
+/* ===== SCREENS ===== */
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden;}
+.screen.active{display:flex;animation:fadeIn .4s;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+/* ===== SETUP SCREEN ===== */
+#setupScreen{
+  background:
+    radial-gradient(circle at 50% 0%, rgba(96,165,250,.12), transparent 50%),
+    #07070d;
+  padding:calc(env(safe-area-inset-top,0px) + 24px) 20px calc(env(safe-area-inset-bottom,0px) + 24px);
+  overflow-y:auto;
+  align-items:center;
+  justify-content:flex-start;
+}
+.setup-content{width:100%;max-width:400px;margin:auto;padding-top:10px;padding-bottom:10px;}
+
+.setup-header{text-align:center;margin-bottom:28px;}
+.setup-icon{font-size:56px;line-height:1;margin-bottom:10px;display:block;
+  filter:drop-shadow(0 0 30px rgba(96,165,250,.4));}
+.setup-title{font-size:26px;font-weight:900;letter-spacing:-.02em;line-height:1.15;
+  background:linear-gradient(135deg,#a8d4ff,#ffffff 40%,#c8b0ff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:6px;}
+.setup-subtitle{font-size:12px;color:var(--muted);line-height:1.5;font-weight:500;}
+
+.setup-section{
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:14px 16px;
+  margin-bottom:12px;
+}
+.setup-label{
+  font-size:10px;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.08em;font-weight:800;margin-bottom:8px;
+}
+.setup-options{display:flex;gap:6px;}
+.setup-opt{
+  flex:1;padding:10px 4px;
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--border);
+  border-radius:10px;color:var(--muted);
+  font-family:inherit;font-size:11px;font-weight:800;
+  cursor:pointer;transition:all .15s;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  text-align:center;
+}
+.setup-opt .em{font-size:16px;}
+.setup-opt.active{
+  background:rgba(96,165,250,.18);
+  border-color:rgba(96,165,250,.6);
+  color:#a8d4ff;
+  box-shadow:0 0 16px rgba(96,165,250,.2);
+}
+.setup-opt:active{transform:scale(.96);}
+
+.setup-hint{font-size:10px;color:var(--dim);line-height:1.5;margin-top:8px;font-style:italic;}
+
+.setup-birth{
+  width:100%;padding:18px;border:none;border-radius:16px;
+  font-family:inherit;font-size:17px;font-weight:900;cursor:pointer;
+  background:linear-gradient(180deg,#a8d4ff,#60a5fa);color:#04101e;
+  box-shadow:0 8px 30px rgba(96,165,250,.4),inset 0 1px 0 rgba(255,255,255,.5);
+  transition:transform .1s;letter-spacing:.01em;margin-top:8px;
+}
+.setup-birth:active{transform:scale(.97);filter:brightness(1.1);}
+
+.setup-note{font-size:10px;color:var(--dim);line-height:1.5;margin-top:14px;text-align:center;font-style:italic;}
+
+/* ===== LIFE SCREEN ===== */
+#lifeScreen{background:var(--bg);}
+
+/* Top bar */
+.life-top{
+  padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 8px;
+  background:rgba(10,10,18,.95);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;z-index:10;
+}
+.life-id{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.life-flag{font-size:22px;flex-shrink:0;}
+.life-info{flex:1;min-width:0;}
+.life-name{font-size:14px;font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.life-meta{font-size:9px;color:var(--muted);margin-top:1px;font-weight:600;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.life-age-box{text-align:right;flex-shrink:0;}
+.life-age{font-size:22px;font-weight:900;color:var(--gold);font-variant-numeric:tabular-nums;line-height:1;}
+.life-age-lbl{font-size:9px;color:var(--muted);font-weight:700;margin-top:1px;}
+
+.stats-line{display:flex;gap:4px;margin-bottom:5px;}
+.stat-chip{
+  flex:1;display:flex;align-items:center;gap:3px;
+  background:rgba(255,255,255,.03);
+  border-radius:6px;padding:3px 6px;
+  border:1px solid var(--border);
+}
+.stat-chip .em{font-size:9px;flex-shrink:0;}
+.stat-chip .bar{flex:1;height:3px;background:rgba(0,0,0,.5);border-radius:2px;overflow:hidden;}
+.stat-chip .fill{height:100%;border-radius:2px;transform-origin:left;transition:transform .4s;}
+.stat-chip .fill.h{background:linear-gradient(90deg,#f87171,#fb923c);}
+.stat-chip .fill.s{background:linear-gradient(90deg,#fbbf24,#f59e0b);}
+.stat-chip .fill.k{background:linear-gradient(90deg,#60a5fa,#3b82f6);}
+.stat-chip .fill.r{background:linear-gradient(90deg,#ec4899,#db2777);}
+.stat-chip .v{font-size:8px;font-weight:800;color:var(--muted);min-width:14px;text-align:right;
+  font-variant-numeric:tabular-nums;}
+
+.money-line{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:10px;color:var(--muted);font-weight:700;padding:0 2px;
+}
+.money-line .val{color:var(--gold);font-weight:900;font-variant-numeric:tabular-nums;}
+
+/* Main log */
+.life-log{
+  flex:1;overflow-y:auto;
+  padding:10px 12px;
+  display:flex;flex-direction:column;gap:4px;
+  -webkit-overflow-scrolling:touch;
+  scroll-behavior:smooth;
+}
+.log-item{
+  padding:6px 10px;
+  border-radius:8px;
+  font-size:12px;line-height:1.45;
+  color:#c8c8d8;
+  animation:logIn .25s ease;
+  border-left:2px solid var(--dim);
+  background:rgba(255,255,255,.02);
+}
+@keyframes logIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.log-item .age{font-size:9px;font-weight:900;color:var(--muted);margin-bottom:1px;
+  text-transform:uppercase;letter-spacing:.04em;}
+.log-item.good{border-left-color:var(--green);background:rgba(52,211,153,.05);}
+.log-item.bad{border-left-color:var(--red);background:rgba(248,113,113,.05);}
+.log-item.event{border-left-color:var(--purple);background:rgba(168,85,247,.06);}
+.log-item.milestone{border-left-color:var(--gold);background:rgba(255,196,64,.07);}
+.log-item.death{border-left-color:var(--red);background:rgba(248,113,113,.1);font-weight:700;}
+
+/* Siblings */
+.siblings-bar{
+  padding:6px 12px;
+  background:rgba(10,10,18,.95);
+  border-top:1px solid var(--border);
+  flex-shrink:0;
+  display:flex;gap:4px;
+  overflow-x:auto;scrollbar-width:none;
+}
+.siblings-bar::-webkit-scrollbar{display:none;}
+.sib{
+  flex:1;min-width:70px;
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:5px 6px;
+  text-align:center;
+  transition:all .15s;
+}
+.sib.me{background:rgba(255,196,64,.1);border-color:rgba(255,196,64,.4);}
+.sib .flag{font-size:12px;}
+.sib .nm{font-size:8px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px;}
+.sib .ag{font-size:10px;font-weight:900;color:var(--gold);font-variant-numeric:tabular-nums;margin-top:1px;}
+
+/* Bottom panel */
+.life-bottom{
+  padding:6px 12px calc(env(safe-area-inset-bottom,0px) + 8px);
+  background:rgba(10,10,18,.95);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--border);
+  flex-shrink:0;
+}
+.focus-label{font-size:9px;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.07em;font-weight:800;margin-bottom:4px;text-align:center;}
+.focus-row{display:flex;gap:4px;margin-bottom:6px;}
+.focus-btn{
+  flex:1;padding:8px 2px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:rgba(255,255,255,.04);
+  color:var(--muted);
+  font-family:inherit;font-size:8px;font-weight:800;
+  cursor:pointer;transition:all .15s;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+}
+.focus-btn .em{font-size:16px;}
+.focus-btn.active{
+  background:rgba(96,165,250,.18);
+  border-color:rgba(96,165,250,.6);
+  color:#a8d4ff;
+  box-shadow:0 0 12px rgba(96,165,250,.2);
+}
+.focus-btn:active{transform:scale(.94);}
+.focus-btn:disabled{opacity:.35;}
+
+.controls-row{display:flex;gap:5px;}
+.btn-next{
+  flex:1;padding:13px;
+  border:none;border-radius:12px;
+  font-family:inherit;font-size:14px;font-weight:900;
+  cursor:pointer;
+  background:linear-gradient(180deg,#a8d4ff,#60a5fa);
+  color:#04101e;
+  box-shadow:0 4px 18px rgba(96,165,250,.35);
+  transition:transform .1s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.btn-next:active{transform:scale(.97);}
+.btn-next:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;}
+
+.btn-ctrl{
+  padding:13px 12px;
+  border:1px solid var(--border-hi);
+  border-radius:12px;
+  background:rgba(255,255,255,.06);
+  color:var(--text);
+  font-size:14px;
+  cursor:pointer;
+  transition:transform .1s;
+  display:flex;align-items:center;justify-content:center;
+  min-width:44px;
+}
+.btn-ctrl:active{transform:scale(.94);background:rgba(255,255,255,.12);}
+.btn-ctrl.active{background:rgba(52,211,153,.2);border-color:rgba(52,211,153,.5);color:#8fffc0;}
+
+.speed-indicator{
+  position:absolute;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  background:rgba(10,10,18,.95);
+  color:var(--gold);
+  font-size:12px;font-weight:900;
+  padding:6px 14px;border-radius:10px;
+  border:1px solid var(--gold);
+  pointer-events:none;
+  opacity:0;transition:opacity .2s;
+  z-index:20;
+}
+.speed-indicator.show{opacity:1;}
+
+/* ===== MODAL ===== */
+.modal-overlay{
+  position:absolute;inset:0;
+  background:rgba(5,5,10,.88);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  z-index:60;
+  display:flex;align-items:flex-end;justify-content:center;
+  padding:16px;
+  animation:fadeIn .25s;
+}
+.modal-card{
+  background:linear-gradient(165deg,#1a1a2e,#0e0e1a);
+  border:1px solid rgba(168,85,247,.4);
+  border-radius:22px;
+  padding:22px 20px calc(env(safe-area-inset-bottom,0px) + 20px);
+  width:100%;max-width:420px;
+  box-shadow:0 20px 60px rgba(0,0,0,.8),0 0 40px rgba(168,85,247,.15);
+  animation:slideUp .35s cubic-bezier(.2,1,.3,1);
+}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.modal-icon{font-size:24px;}
+.modal-title{font-size:10px;font-weight:900;color:var(--purple);
+  text-transform:uppercase;letter-spacing:.06em;}
+.modal-text{font-size:14px;line-height:1.55;color:#d8d8e8;margin-bottom:16px;font-weight:500;}
+.modal-choices{display:flex;flex-direction:column;gap:8px;}
+.choice-btn{
+  width:100%;padding:14px 16px;text-align:left;
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--border-hi);
+  border-radius:14px;
+  color:var(--text);font-family:inherit;
+  font-size:13px;font-weight:600;line-height:1.4;
+  cursor:pointer;transition:all .15s;
+}
+.choice-btn:active{transform:scale(.98);background:rgba(168,85,247,.18);border-color:var(--purple);}
+
+/* Question modal (at 5,15,30,50,70) */
+.question-card{
+  background:linear-gradient(165deg,#1a1a2e,#0e0e1a);
+  border:1px solid rgba(255,196,64,.4);
+  border-radius:22px;
+  padding:22px 20px;
+  width:100%;max-width:420px;
+  box-shadow:0 20px 60px rgba(0,0,0,.8),0 0 40px rgba(255,196,64,.15);
+  animation:slideUp .35s cubic-bezier(.2,1,.3,1);
+}
+.question-label{font-size:10px;font-weight:900;color:var(--gold);
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.question-text{font-size:16px;font-weight:700;line-height:1.4;color:#f0f0f8;margin-bottom:16px;}
+.question-input{
+  width:100%;min-height:80px;
+  padding:12px;border-radius:12px;
+  background:rgba(0,0,0,.3);
+  border:1px solid var(--border-hi);
+  color:var(--text);
+  font-family:inherit;font-size:13px;line-height:1.5;
+  resize:none;
+  outline:none;
+}
+.question-input:focus{border-color:var(--gold);box-shadow:0 0 20px rgba(255,196,64,.2);}
+.question-input::placeholder{color:var(--dim);}
+.question-actions{display:flex;gap:8px;margin-top:12px;}
+.btn-skip{
+  flex:1;padding:12px;
+  border:1px solid var(--border-hi);
+  border-radius:12px;
+  background:rgba(255,255,255,.05);
+  color:var(--muted);
+  font-family:inherit;font-size:13px;font-weight:800;
+  cursor:pointer;
+}
+.btn-skip:active{transform:scale(.97);}
+.btn-submit{
+  flex:2;padding:12px;
+  border:none;border-radius:12px;
+  background:linear-gradient(180deg,#ffd97a,#ffb940);
+  color:#1a0a05;
+  font-family:inherit;font-size:13px;font-weight:900;
+  cursor:pointer;
+  box-shadow:0 4px 16px rgba(255,185,64,.3);
+}
+.btn-submit:active{transform:scale(.97);}
+
+/* ===== DEATH SCREEN ===== */
+#deathScreen{
+  background:
+    radial-gradient(circle at 50% 20%, rgba(248,113,113,.08), transparent 50%),
+    #06060c;
+  padding:calc(env(safe-area-inset-top,0px) + 20px) 16px calc(env(safe-area-inset-bottom,0px) + 20px);
+  overflow-y:auto;
+}
+.death-content{width:100%;max-width:400px;margin:auto;text-align:center;padding:10px 0;}
+.death-icon{font-size:56px;margin-bottom:8px;display:block;
+  filter:drop-shadow(0 0 30px rgba(248,113,113,.4));}
+.death-title{font-size:22px;font-weight:900;color:#f0f0f8;margin-bottom:4px;}
+.death-sub{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:18px;}
+
+.death-summary{
+  background:linear-gradient(165deg,#16162a,#0c0c16);
+  border:1px solid var(--border-hi);
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:14px;
+  text-align:left;
+}
+.sum-row{display:flex;justify-content:space-between;padding:6px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);font-size:12px;}
+.sum-row:last-child{border-bottom:none;}
+.sum-row .k{color:var(--muted);font-weight:600;}
+.sum-row .v{font-weight:800;color:#f0f0f8;font-variant-numeric:tabular-nums;}
+.sum-row .v.gold{color:var(--gold);}
+
+.final-stats{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:10px;}
+.fs-box{background:rgba(255,255,255,.04);border-radius:9px;padding:8px;text-align:center;}
+.fs-box .em{font-size:14px;}
+.fs-box .n{font-size:15px;font-weight:900;color:var(--gold);font-variant-numeric:tabular-nums;}
+.fs-box .l{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:1px;font-weight:700;}
+
+.compare-title{font-size:11px;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.08em;font-weight:800;margin:16px 0 8px;text-align:left;}
+.compare-item{display:flex;align-items:center;gap:8px;padding:8px 10px;
+  background:rgba(255,255,255,.03);border:1px solid var(--border);
+  border-radius:10px;margin-bottom:5px;font-size:11px;text-align:left;}
+.compare-item.me{background:rgba(255,196,64,.1);border-color:rgba(255,196,64,.4);}
+.compare-item .cf{font-size:14px;flex-shrink:0;}
+.compare-item .ci{flex:1;min-width:0;}
+.compare-item .cn{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.compare-item .cm{font-size:9px;color:var(--muted);margin-top:1px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.compare-item .ca{font-size:12px;font-weight:900;color:var(--gold);
+  font-variant-numeric:tabular-nums;flex-shrink:0;}
+
+.death-btns{display:flex;flex-direction:column;gap:8px;margin-top:16px;}
+.death-btn{width:100%;padding:14px;border:none;border-radius:14px;
+  font-family:inherit;font-size:14px;font-weight:900;cursor:pointer;
+  transition:transform .1s;}
+.death-btn.primary{background:linear-gradient(180deg,#ffd97a,#ffb940);color:#1a0a05;
+  box-shadow:0 6px 24px rgba(255,185,64,.35);}
+.death-btn.secondary{background:rgba(255,255,255,.07);color:var(--text);
+  border:1px solid var(--border-hi);}
+.death-btn:active{transform:scale(.97);}
+
+/* Toast */
+.toast{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:rgba(20,20,32,.97);color:var(--text);
+  padding:12px 20px;border-radius:14px;font-size:12px;font-weight:700;
+  z-index:100;border:1px solid var(--gold);
+  box-shadow:0 12px 40px rgba(0,0,0,.7);
+  max-width:80vw;text-align:center;
+  animation:toastAnim 2s forwards;pointer-events:none;
+}
+@keyframes toastAnim{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.8);}
+  10%{opacity:1;transform:translate(-50%,-50%) scale(1);}
+  85%{opacity:1;transform:translate(-50%,-50%) scale(1);}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(.95);}
+}
+
+/* Loading overlay */
+.loading-screen{
+  position:absolute;inset:0;
+  background:#07070d;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:200;gap:16px;
+}
+.loading-screen p{font-size:13px;color:var(--muted);font-weight:600;}
+.spinner{
+  width:40px;height:40px;border:3px solid rgba(96,165,250,.2);
+  border-top-color:#60a5fa;border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ===== RESPONSIVE ===== */
+@media (max-height: 650px){
+  .setup-title{font-size:22px;}
+  .setup-icon{font-size:44px;}
+  .life-age{font-size:18px;}
+  .focus-btn{padding:6px 1px;}
+  .focus-btn .em{font-size:14px;}
+  .btn-next{padding:11px;font-size:13px;}
+  .btn-ctrl{padding:11px 10px;font-size:12px;}
+  .sib{padding:4px 4px;}
+  .sib .nm{font-size:7px;}
+}
+@media (max-width: 360px){
+  .setup-title{font-size:22px;}
+  .setup-opt{font-size:10px;padding:8px 3px;}
+  .life-name{font-size:13px;}
+  .log-item{font-size:11px;}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- SETUP SCREEN -->
+  <div class="screen active" id="setupScreen">
+    <div class="setup-content">
+      <div class="setup-header">
+        <span class="setup-icon">🌍</span>
+        <div class="setup-title">1 из 8 миллиардов</div>
+        <div class="setup-subtitle">Вы родитесь случайным ребёнком на Земле. Выбор страны, семьи и пола — за статистикой.</div>
+      </div>
+
+      <div class="setup-section">
+        <div class="setup-label">В какой мир вы родитесь</div>
+        <div class="setup-options" id="eraOptions">
+          <button class="setup-opt active" data-era="present">
+            <span class="em">🕐</span><span>Сейчас</span>
+          </button>
+          <button class="setup-opt" data-era="past">
+            <span class="em">📜</span><span>Прошлое</span>
+          </button>
+          <button class="setup-opt" data-era="future">
+            <span class="em">🚀</span><span>Будущее</span>
+          </button>
+        </div>
+        <div class="setup-hint" id="eraHint">Мир 2026 года. Реальная статистика ООН, ВОЗ и Всемирного банка.</div>
+      </div>
+
+      <div class="setup-section">
+        <div class="setup-label">Как определить страну рождения</div>
+        <div class="setup-options" id="modeOptions">
+          <button class="setup-opt active" data-mode="births">
+            <span class="em">👶</span><span>По рождениям</span>
+          </button>
+          <button class="setup-opt" data-mode="population">
+            <span class="em">👥</span><span>По населению</span>
+          </button>
+        </div>
+        <div class="setup-hint" id="modeHint">Вероятность страны пропорциональна числу младенцев, рождающихся в ней за год. Индия и Нигерия выпадают чаще.</div>
+      </div>
+
+      <div class="setup-section">
+        <div class="setup-label">Сколько продлится жизнь</div>
+        <div class="setup-options" id="durationOptions">
+          <button class="setup-opt" data-duration="1800">
+            <span class="em">⚡</span><span>30 мин</span>
+          </button>
+          <button class="setup-opt active" data-duration="3600">
+            <span class="em">⏱</span><span>1 час</span>
+          </button>
+          <button class="setup-opt" data-duration="5400">
+            <span class="em">🐢</span><span>1.5 часа</span>
+          </button>
+        </div>
+        <div class="setup-hint">При 1 часе один год жизни проходит примерно за 40–60 секунд (в зависимости от продолжительности жизни).</div>
+      </div>
+
+      <button class="setup-birth" id="birthBtn">🎲 Родиться</button>
+
+      <div class="setup-note">
+        Игра основана на реальной статистике. Все персонажи вымышлены. Бесплатно, без рекламы и регистрации.
+      </div>
+    </div>
+  </div>
+
+  <!-- LIFE SCREEN -->
+  <div class="screen" id="lifeScreen">
+    <div class="life-top">
+      <div class="life-id">
+        <div class="life-flag" id="lifeFlag">🇮🇳</div>
+        <div class="life-info">
+          <div class="life-name" id="lifeName">—</div>
+          <div class="life-meta" id="lifeMeta">—</div>
+        </div>
+        <div class="life-age-box">
+          <div class="life-age" id="lifeAge">0</div>
+          <div class="life-age-lbl">лет</div>
+        </div>
+      </div>
+      <div class="stats-line">
+        <div class="stat-chip"><span class="em">❤️</span><div class="bar"><div class="fill h" id="barH"></div></div><span class="v" id="valH">70</span></div>
+        <div class="stat-chip"><span class="em">😊</span><div class="bar"><div class="fill s" id="barS"></div></div><span class="v" id="valS">70</span></div>
+        <div class="stat-chip"><span class="em">📚</span><div class="bar"><div class="fill k" id="barK"></div></div><span class="v" id="valK">20</span></div>
+        <div class="stat-chip"><span class="em">👥</span><div class="bar"><div class="fill r" id="barR"></div></div><span class="v" id="valR">50</span></div>
+      </div>
+      <div class="money-line">
+        <span>💰 Накопления</span>
+        <span class="val" id="moneyVal">0 ₽</span>
+      </div>
+    </div>
+
+    <div class="life-log" id="lifeLog"></div>
+
+    <div class="siblings-bar" id="siblingsBar"></div>
+
+    <div class="life-bottom">
+      <div class="focus-label" id="focusLabel">Фокус этого года</div>
+      <div class="focus-row" id="focusRow">
+        <button class="focus-btn" data-focus="study"><span class="em">🎓</span><span>Учёба</span></button>
+        <button class="focus-btn" data-focus="work"><span class="em">💼</span><span>Работа</span></button>
+        <button class="focus-btn active" data-focus="health"><span class="em">🏃</span><span>Здоровье</span></button>
+        <button class="focus-btn" data-focus="family"><span class="em">👨‍👩‍👧</span><span>Семья</span></button>
+        <button class="focus-btn" data-focus="rest"><span class="em">🎉</span><span>Отдых</span></button>
+      </div>
+      <div class="controls-row">
+        <button class="btn-next" id="nextYearBtn">▶ Прожить год</button>
+        <button class="btn-ctrl" id="pauseBtn" title="Пауза">⏸</button>
+        <button class="btn-ctrl" id="speedBtn" title="Скорость">1×</button>
+        <button class="btn-ctrl" id="autoBtn" title="Авто">🤖</button>
+      </div>
+    </div>
+
+    <div class="speed-indicator" id="speedIndicator">1×</div>
+  </div>
+
+  <!-- DEATH SCREEN -->
+  <div class="screen" id="deathScreen">
+    <div class="death-content">
+      <span class="death-icon" id="deathIcon">🕯️</span>
+      <div class="death-title" id="deathTitle">Жизнь прожита</div>
+      <div class="death-sub" id="deathSub">—</div>
+
+      <div class="death-summary" id="deathSummary"></div>
+
+      <div class="compare-title">Рождённые в ту же секунду</div>
+      <div id="compareList"></div>
+
+      <div class="death-btns">
+        <button class="death-btn primary" id="newLifeBtn">🎲 Прожить ещё одну жизнь</button>
+        <button class="death-btn secondary" id="homeBtn">🏠 В начало</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(() => {
+'use strict';
+
+/* ============================================================
+   ДАННЫЕ СТРАН — реальная статистика (округлённая)
+   ============================================================ */
+const COUNTRIES = [
+  { n:'Индия', f:'🇮🇳', pop:1440, br:16.9, le:70.8, im:27, gdp:8500,  lit:76, region:'south_asian' },
+  { n:'Китай', f:'🇨🇳', pop:1410, br:6.4,  le:78.6, im:6.8, gdp:23400, lit:97, region:'east_asian' },
+  { n:'Нигерия', f:'🇳🇬', pop:223, br:36,  le:54.6, im:74,  gdp:5300,  lit:62, region:'african' },
+  { n:'Пакистан', f:'🇵🇰', pop:240, br:28, le:67.3, im:62,  gdp:6400,  lit:58, region:'south_asian' },
+  { n:'Индонезия', f:'🇮🇩', pop:277, br:16, le:71.9, im:21,  gdp:13900, lit:96, region:'southeast_asian' },
+  { n:'США', f:'🇺🇸', pop:335, br:11, le:78.5, im:5.5, gdp:80000, lit:99, region:'north_american' },
+  { n:'Бразилия', f:'🇧🇷', pop:216, br:13, le:75.9, im:13,  gdp:18000, lit:95, region:'latin_american' },
+  { n:'Бангладеш', f:'🇧🇩', pop:173, br:17, le:74.3, im:27,  gdp:9000,  lit:75, region:'south_asian' },
+  { n:'Россия', f:'🇷🇺', pop:144, br:9.6, le:72.6, im:5,   gdp:36000, lit:99, region:'european' },
+  { n:'Мексика', f:'🇲🇽', pop:128, br:14, le:75.1, im:12,  gdp:22000, lit:95, region:'latin_american' },
+  { n:'Эфиопия', f:'🇪🇹', pop:126, br:30, le:67.3, im:47,  gdp:3500,  lit:51, region:'african' },
+  { n:'Япония', f:'🇯🇵', pop:124, br:6.6, le:84.8, im:1.8, gdp:51000, lit:99, region:'east_asian' },
+  { n:'Германия', f:'🇩🇪', pop:84, br:9,  le:81.2, im:3.2, gdp:63000, lit:99, region:'european' },
+  { n:'Великобритания', f:'🇬🇧', pop:68, br:10, le:81.3, im:4, gdp:55000, lit:99, region:'european' },
+  { n:'Франция', f:'🇫🇷', pop:65, br:10.6, le:82.9, im:3.7, gdp:56000, lit:99, region:'european' },
+  { n:'Италия', f:'🇮🇹', pop:59, br:6.7, le:83.5, im:2.9, gdp:54000, lit:99, region:'european' },
+  { n:'ЮАР', f:'🇿🇦', pop:60, br:19, le:65.3, im:28,  gdp:16000, lit:95, region:'african' },
+  { n:'Вьетнам', f:'🇻🇳', pop:98, br:14, le:74.6, im:16,  gdp:13000, lit:95, region:'southeast_asian' },
+  { n:'Турция', f:'🇹🇷', pop:85, br:14, le:78.6, im:9,   gdp:40000, lit:96, region:'middle_eastern' },
+  { n:'Иран', f:'🇮🇷', pop:89, br:14, le:77.6, im:12,  gdp:17000, lit:89, region:'middle_eastern' },
+  { n:'Таиланд', f:'🇹🇭', pop:72, br:9,  le:80.0, im:7,   gdp:21000, lit:94, region:'southeast_asian' },
+  { n:'Филиппины', f:'🇵🇭', pop:117, br:22, le:72.1, im:22,  gdp:10000, lit:96, region:'southeast_asian' },
+  { n:'Египет', f:'🇪🇬', pop:112, br:22, le:70.2, im:19,  gdp:15000, lit:71, region:'middle_eastern' },
+  { n:'ДР Конго', f:'🇨🇩', pop:99, br:42, le:59.7, im:70,  gdp:1400,  lit:77, region:'african' },
+  { n:'Кения', f:'🇰🇪', pop:55, br:27, le:63.7, im:34,  gdp:5500,  lit:82, region:'african' },
+  { n:'Аргентина', f:'🇦🇷', pop:46, br:13, le:77.7, im:9,   gdp:26000, lit:99, region:'latin_american' },
+  { n:'Колумбия', f:'🇨🇴', pop:52, br:14, le:77.7, im:12,  gdp:20000, lit:95, region:'latin_american' },
+  { n:'Испания', f:'🇪🇸', pop:48, br:7.6, le:83.9, im:2.7, gdp:48000, lit:98, region:'european' },
+  { n:'Польша', f:'🇵🇱', pop:38, br:8.9, le:78.6, im:3.9, gdp:43000, lit:99, region:'european' },
+  { n:'Австралия', f:'🇦🇺', pop:26, br:11.6, le:83.4, im:3.1, gdp:64000, lit:99, region:'north_american' },
+  { n:'Канада', f:'🇨🇦', pop:39, br:9.5, le:82.6, im:4.4, gdp:58000, lit:99, region:'north_american' },
+  { n:'Украина', f:'🇺🇦', pop:37, br:8,  le:71,   im:7,   gdp:14000, lit:99, region:'european' },
+  { n:'Казахстан', f:'🇰🇿', pop:20, br:23, le:74,   im:9,   gdp:34000, lit:99, region:'european' },
+  { n:'Марокко', f:'🇲🇦', pop:38, br:17, le:74.6, im:18,  gdp:10000, lit:79, region:'middle_eastern' },
+  { n:'Саудовская Аравия', f:'🇸🇦', pop:36, br:15, le:78.7, im:5.6, gdp:55000, lit:98, region:'middle_eastern' },
+  { n:'Малайзия', f:'🇲🇾', pop:34, br:14, le:76.6, im:7,   gdp:33000, lit:95, region:'southeast_asian' }
+];
+
+/* Имена по регионам */
+const NAMES = {
+  south_asian: { m:['Арджун','Рахул','Викрам','Адитья','Рохан','Каран','Санджай','Ашок','Никхил','Раджеш'], f:['Прия','Аня','Дивья','Ниша','Кавита','Рия','Мира','Лакшми','Адити','Снеха'] },
+  east_asian: { m:['Вэй','Цзюнь','Мин','Хао','Лэй','Юки','Хиро','Рен','Кайто','Тао'], f:['Мэй','Лин','Сюэ','Юки','Ай','Хана','Сакура','Цзин','Янь','Мэйлин'] },
+  african: { m:['Кваме','Чинеду','Олу','Аде','Кофи','Мбарек','Табо','Джибрил','Обинна','Сифо'], f:['Амара','Нгози','Фатима','Зара','Аиша','Номса','Адеола','Мвана','Тендаи','Лумумба'] },
+  middle_eastern: { m:['Али','Омар','Хасан','Юсеф','Карим','Мехди','Рашид','Халид','Тарик','Фарид'], f:['Лейла','Фатима','Амира','Ясмин','Зейнаб','Марьям','Нур','Сальма','Рания','Далия'] },
+  european: { m:['Джон','Джеймс','Томас','Лукас','Макс','Пьер','Ханс','Иван','Александр','Даниэль'], f:['Эмма','Софи','Анна','Мария','Клара','Елена','Оливия','Шарлотта','Изабелла','Виктория'] },
+  latin_american: { m:['Диего','Карлос','Мигель','Хуан','Луис','Педро','Хавьер','Андрес','Мануэль','Рафаэль'], f:['Мария','София','Изабель','Кармен','Лусия','Андреа','Валентина','Камила','Габриэла','Паула'] },
+  north_american: { m:['Джек','Майкл','Дэвид','Крис','Райан','Тайлер','Брэндон','Ной','Итан','Логан'], f:['Джессика','Эшли','Эмили','Сара','Меган','Лорен','Рэйчел','Ханна','Мэдисон','Софи'] },
+  southeast_asian: { m:['Нгуен','Минь','Хоанг','Сомчай','Ади','Баю','Дева','Рисаль','Аунг','Кит'], f:['Линь','Май','Лан','Тхай','Ниса','Сри','Деви','Аю','Чандра','Кири'] }
+};
+
+/* ============================================================
+   СОБЫТИЯ
+   ============================================================ */
+const EVENTS = [
+  { age:[1,2], icon:'👶', title:'Первые шаги', text:'Вы делаете свой первый шаг. Мама счастлива.',
+    choices:[
+      { text:'Уверенно шагнуть вперёд', eff:{happiness:5, relationships:3}, res:'Вы падаете, но смеётесь.' },
+      { text:'Сесть и заплакать', eff:{happiness:-2, relationships:2}, res:'Мама берёт вас на руки.' }
+    ]
+  },
+  { age:[2,4], icon:'🤒', title:'Детская болезнь', text:'Вы простудились. Температура.',
+    choices:[
+      { text:'Лечиться дома', eff:{health:5, happiness:-5}, res:'Неделя постели.' },
+      { text:'Идти гулять', eff:{health:-10, happiness:5}, res:'Гуляете, но кашель остаётся.' }
+    ]
+  },
+  { age:[3,5], icon:'🧸', title:'Любимая игрушка', text:'В садике у вас появилась любимая игрушка. Другой ребёнок тоже хочет её.',
+    choices:[
+      { text:'Поделиться', eff:{relationships:5, happiness:2}, res:'Вы подружились.' },
+      { text:'Оставить себе', eff:{happiness:3, relationships:-3}, res:'Друг обиделся.' }
+    ]
+  },
+  { age:[6,8], icon:'🎒', title:'Первый класс', text:'Первый день в школе. Новые лица, страх и любопытство.',
+    choices:[
+      { text:'Сразу завести друзей', eff:{relationships:8, happiness:5, knowledge:2}, res:'Вы знакомитесь с классом.' },
+      { text:'Сидеть тихо и слушать', eff:{knowledge:6, relationships:-2}, res:'Вы внимательны, но одиноки.' }
+    ]
+  },
+  { age:[8,11], icon:'⚽', title:'Секция', text:'Родители предлагают записаться на секцию.',
+    choices:[
+      { text:'Спорт', eff:{health:10, happiness:5, relationships:3}, res:'Вы в команде.' },
+      { text:'Музыка', eff:{knowledge:6, happiness:4}, res:'Учитесь играть на пианино.' },
+      { text:'Ничего', eff:{happiness:5, health:-3}, res:'Свободное время дома.' }
+    ]
+  },
+  { age:[10,13], icon:'📱', title:'Первый телефон', text:'У одноклассников появились смартфоны. Вы просите у родителей.',
+    choices:[
+      { text:'Просить настойчиво', eff:{happiness:6, relationships:3}, res:'Родители сдались.' },
+      { text:'Подождать', eff:{knowledge:3, happiness:-2}, res:'Пока без телефона.' }
+    ]
+  },
+  { age:[12,15], icon:'🎯', title:'Контрольная', text:'Важная контрольная. Можно списать.',
+    choices:[
+      { text:'Списать', eff:{knowledge:-3, happiness:3}, res:'Учитель не заметил.' },
+      { text:'Решить самому', eff:{knowledge:8, happiness:-3}, res:'Сложно, но честно.' }
+    ]
+  },
+  { age:[13,16], icon:'💔', title:'Первая влюблённость', text:'Одноклассник/одноклассница нравится вам давно.',
+    choices:[
+      { text:'Признаться', eff:{happiness:10, relationships:5, knowledge:-2}, res:'Взаимно!' },
+      { text:'Молчать', eff:{happiness:-3, knowledge:3}, res:'Держите в себе.' }
+    ]
+  },
+  { age:[15,17], icon:'📚', title:'Экзамены', text:'Приближаются выпускные экзамены.',
+    choices:[
+      { text:'Готовиться', eff:{knowledge:15, happiness:-5}, res:'Отличные оценки.' },
+      { text:'Гулять', eff:{happiness:10, knowledge:-5, relationships:5}, res:'Лето запомнится.' }
+    ]
+  },
+  { age:[18,20], icon:'🎓', title:'Университет или работа?', text:'Школа окончена. Что дальше?',
+    choices:[
+      { text:'Университет', eff:{knowledge:20, happiness:5, money:-20000}, res:'Поступили!' },
+      { text:'Пойти работать', eff:{money:30000, knowledge:5, happiness:2}, res:'Начали зарабатывать.' }
+    ]
+  },
+  { age:[19,24], icon:'💼', title:'Первая работа', text:'Предлагают работу. Платят немного, но опыт важнее.',
+    choices:[
+      { text:'Согласиться', eff:{money:40000, knowledge:8, happiness:-3}, res:'Офис, кофе, отчёты.' },
+      { text:'Подождать', eff:{happiness:3, money:-5000}, res:'Ищете дальше.' }
+    ]
+  },
+  { age:[20,25], icon:'🌍', title:'Переезд', text:'Друг предлагает переехать в другой город.',
+    choices:[
+      { text:'Переехать', eff:{knowledge:10, happiness:5, relationships:-10, money:-15000}, res:'Новый город.' },
+      { text:'Остаться', eff:{relationships:8, happiness:2}, res:'Дом есть дом.' }
+    ]
+  },
+  { age:[26,32], icon:'💍', title:'Отношения', text:'Партнёр намекает на серьёзные отношения.',
+    choices:[
+      { text:'Согласиться', eff:{happiness:12, relationships:15, money:-30000}, res:'Свадьба!' },
+      { text:'Сказать «подумаю»', eff:{relationships:-8, happiness:-3}, res:'Партнёр обижен.' }
+    ]
+  },
+  { age:[28,35], icon:'👶', title:'Ребёнок', text:'В семье ожидается пополнение.',
+    choices:[
+      { text:'Отлично!', eff:{happiness:15, relationships:10, money:-50000, health:-5}, res:'Ребёнок родился!' },
+      { text:'Отложить', eff:{relationships:-5, money:10000}, res:'Пока не время.' }
+    ]
+  },
+  { age:[30,40], icon:'🏠', title:'Ипотека', text:'Можно купить своё жильё.',
+    choices:[
+      { text:'Взять ипотеку', eff:{happiness:10, money:-100000, health:-5}, res:'Своя квартира!' },
+      { text:'Снимать дальше', eff:{money:20000, happiness:-3}, res:'Аренда дешевле.' }
+    ]
+  },
+  { age:[33,42], icon:'📈', title:'Повышение', text:'Начальник предлагает руководящую должность.',
+    choices:[
+      { text:'Согласиться', eff:{money:80000, knowledge:10, health:-10, happiness:5}, res:'Больше денег, меньше сна.' },
+      { text:'Отказаться', eff:{happiness:5, health:5}, res:'Меньше стресса.' }
+    ]
+  },
+  { age:[40,48], icon:'🩺', title:'Медосмотр', text:'Врач рекомендует проверить здоровье.',
+    choices:[
+      { text:'Пройти обследование', eff:{health:12, money:-10000}, res:'Вовремя!' },
+      { text:'Отложить', eff:{health:-8}, res:'Надеемся, всё нормально.' }
+    ]
+  },
+  { age:[45,55], icon:'📉', title:'Кризис', text:'Работа стала рутиной. Друзья советуют сменить сферу.',
+    choices:[
+      { text:'Сменить профессию', eff:{knowledge:12, happiness:8, money:-30000}, res:'Новое начало.' },
+      { text:'Остаться', eff:{happiness:-5, money:30000}, res:'Стабильность. Но тоска.' }
+    ]
+  },
+  { age:[50,58], icon:'🎓', title:'Дети выросли', text:'Дети поступают в университет. Нужна помощь деньгами.',
+    choices:[
+      { text:'Помочь', eff:{relationships:12, happiness:5, money:-60000}, res:'Дети благодарны.' },
+      { text:'Сказать «сами»', eff:{relationships:-8, money:40000}, res:'Обида.' }
+    ]
+  },
+  { age:[55,62], icon:'🌴', title:'Отпуск мечты', text:'Накопилось немного денег. Можно отдохнуть.',
+    choices:[
+      { text:'Поехать', eff:{happiness:15, health:5, money:-50000}, res:'Море, солнце.' },
+      { text:'Отложить на потом', eff:{money:20000, happiness:-3}, res:'Копите дальше.' }
+    ]
+  },
+  { age:[62,70], icon:'🧓', title:'Внуки', text:'Дети привозят внуков на выходные.',
+    choices:[
+      { text:'Возиться с ними', eff:{happiness:15, health:-5, relationships:10}, res:'Смех, игры.' },
+      { text:'Отдохнуть', eff:{health:5, happiness:-5}, res:'Тишина.' }
+    ]
+  },
+  { age:[68,80], icon:'💊', title:'Здоровье', text:'Проблемы со здоровьем. Нужны лекарства.',
+    choices:[
+      { text:'Лечиться', eff:{health:10, money:-20000}, res:'Лекарства помогают.' },
+      { text:'Экономить', eff:{health:-15, money:10000}, res:'Экономия сейчас.' }
+    ]
+  },
+  { age:[72,85], icon:'📖', title:'Воспоминания', text:'Вы пишете мемуары.',
+    choices:[
+      { text:'Писать', eff:{happiness:10, knowledge:5}, res:'Много страниц.' },
+      { text:'Смотреть телевизор', eff:{happiness:3, health:-2}, res:'Спокойно.' }
+    ]
+  }
+];
+
+/* ============================================================
+   ФОКУСЫ
+   ============================================================ */
+const FOCUSES = {
+  study:   { em:'🎓', name:'Учёба',    eff:{knowledge:8, happiness:-3} },
+  work:    { em:'💼', name:'Работа',   eff:{money:15000, health:-3, happiness:-2} },
+  health:  { em:'🏃', name:'Здоровье', eff:{health:8, happiness:2} },
+  family:  { em:'👨‍👩‍👧', name:'Семья',   eff:{relationships:8, happiness:4} },
+  rest:    { em:'🎉', name:'Отдых',    eff:{happiness:8, health:2, money:-5000} }
+};
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let G = null;
+let autoTimer = null;
+let paused = false;
+let speedMultiplier = 1;
+let speedIndex = 0;
+const SPEEDS = [1, 2, 4, 8, 16];
+let yearTimer = null;
+let currentYearDuration = 60000;
+let transitionTimer = null;
+
+let settings = {
+  era: 'present',
+  mode: 'births',
+  duration: 3600
+};
+
+let meta = {
+  totalLives: 0,
+  totalBorn: 0,
+  totalDied: 0
+};
+
+const SAVE_KEY = 'one_in_8b_v2';
+
+/* ============================================================
+   UTILS
+   ============================================================ */
+function $(id){ return document.getElementById(id); }
+function rand(a, b){ return Math.floor(Math.random() * (b - a + 1)) + a; }
+function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+function fmtMoney(n){
+  if (Math.abs(n) >= 1e6) return (n/1e6).toFixed(1) + 'М';
+  if (Math.abs(n) >= 1e3) return (n/1e3).toFixed(0) + 'К';
+  return n.toString();
+}
+
+function saveMeta(){
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(meta)); } catch(e){}
+}
+function loadMeta(){
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    meta.totalLives = d.totalLives || 0;
+    meta.totalBorn = d.totalBorn || 0;
+    meta.totalDied = d.totalDied || 0;
+  } catch(e){}
+}
+
+/* ============================================================
+   COUNTRY PICKER
+   ============================================================ */
+function pickCountry(){
+  const key = settings.mode === 'births' ? 'br' : 'pop';
+  const total = COUNTRIES.reduce((s, c) => s + c[key], 0);
+  let r = Math.random() * total;
+  for (const c of COUNTRIES){
+    r -= c[key];
+    if (r <= 0) return c;
+  }
+  return COUNTRIES[0];
+}
+
+/* ============================================================
+   LIFE GENERATION
+   ============================================================ */
+function newLife(){
+  const country = pickCountry();
+  const sex = Math.random() < 0.5 ? 'm' : 'f';
+  const names = NAMES[country.region] || NAMES.european;
+  const name = pick(sex === 'm' ? names.m : names.f);
+
+  const wealthRoll = Math.random();
+  let family;
+  if (wealthRoll < 0.15) family = 'poor';
+  else if (wealthRoll < 0.85) family = 'middle';
+  else family = 'rich';
+
+  const wealthBonus = family === 'rich' ? 15 : family === 'poor' ? -10 : 0;
+  const countryBonus = (country.gdp / 50000 - 0.3) * 20;
+
+  const healthBase = clamp(60 + countryBonus * 0.4 + wealthBonus * 0.5, 30, 90);
+  const happinessBase = clamp(55 + countryBonus * 0.3 + wealthBonus * 0.4, 25, 90);
+  const knowledgeBase = clamp(country.lit * 0.6 + wealthBonus * 0.5, 10, 80);
+  const relationshipsBase = clamp(55 + wealthBonus * 0.3, 30, 85);
+
+  const startMoney = family === 'rich' ? rand(50000, 200000) :
+                     family === 'middle' ? rand(1000, 20000) :
+                     rand(0, 1000);
+
+  const maxAge = Math.round(country.le + rand(-8, 12));
+
+  // 4 siblings born in the same second
+  const siblings = [];
+  for (let i = 0; i < 4; i++){
+    const sc = pickCountry();
+    const sNames = NAMES[sc.region] || NAMES.european;
+    const sSex = Math.random() < 0.5 ? 'm' : 'f';
+    const sMaxAge = Math.round(sc.le + rand(-10, 15));
+    siblings.push({
+      name: pick(sSex === 'm' ? sNames.m : sNames.f),
+      country: sc,
+      sex: sSex,
+      maxAge: sMaxAge,
+      currentAge: 0,
+      isDead: false,
+      deathAge: null
+    });
+  }
+
+  return {
+    name, country, sex, family,
+    age: 0,
+    health: healthBase,
+    happiness: happinessBase,
+    knowledge: knowledgeBase,
+    relationships: relationshipsBase,
+    money: startMoney,
+    focus: 'health',
+    log: [],
+    eventsSeen: new Set(),
+    isDead: false,
+    deathAge: 0,
+    maxAge,
+    siblings,
+    milestones: {},
+    questionsAnswered: {}
+  };
+}
+
+/* ============================================================
+   YEAR DURATION
+   ============================================================ */
+function calcYearDuration(life){
+  // 1 real year in ms, based on selected total duration and life expectancy
+  const expected = life.maxAge;
+  return (settings.duration * 1000) / expected;
+}
+
+function scheduleYear(){
+  if (yearTimer){ clearTimeout(yearTimer); yearTimer = null; }
+  if (!G || G.isDead || paused) return;
+  const dur = currentYearDuration / speedMultiplier;
+  yearTimer = setTimeout(() => {
+    if (!paused && G && !G.isDead){
+      tickYear();
+    }
+  }, dur);
+}
+
+/* ============================================================
+   START GAME
+   ============================================================ */
+function startGame(){
+  G = newLife();
+  meta.totalLives++;
+  meta.totalBorn++;
+  saveMeta();
+
+  $('setupScreen').classList.remove('active');
+  $('lifeScreen').classList.add('active');
+  $('lifeLog').innerHTML = '';
+  $('deathScreen').classList.remove('active');
+
+  paused = false;
+  speedMultiplier = 1;
+  speedIndex = 0;
+  $('speedBtn').textContent = '1×';
+  $('pauseBtn').textContent = '⏸';
+  $('pauseBtn').classList.remove('active');
+  $('autoBtn').classList.remove('active');
+
+  $('lifeFlag').textContent = G.country.f;
+  $('lifeName').textContent = G.name;
+  const famLabel = G.family === 'rich' ? 'богатая семья' : G.family === 'poor' ? 'бедная семья' : 'средний класс';
+  $('lifeMeta').textContent = `${G.country.n} · ${famLabel}`;
+
+  updateStats();
+  updateAge();
+  renderSiblings();
+
+  addLog(0, `Вы родились в ${G.country.n} (${G.country.f}). ${G.sex === 'm' ? 'Мальчик' : 'Девочка'}. ${famLabel}.`, 'milestone');
+
+  updateFocusButtons();
+  updateNextButton();
+
+  currentYearDuration = calcYearDuration(G);
+  scheduleYear();
+}
+
+function endLife(){
+  if (yearTimer){ clearTimeout(yearTimer); yearTimer = null; }
+  if (transitionTimer){ clearTimeout(transitionTimer); transitionTimer = null; }
+}
+
+/* ============================================================
+   STATS
+   ============================================================ */
+function updateStats(){
+  $('valH').textContent = Math.round(G.health);
+  $('valS').textContent = Math.round(G.happiness);
+  $('valK').textContent = Math.round(G.knowledge);
+  $('valR').textContent = Math.round(G.relationships);
+
+  $('barH').style.transform = `scaleX(${G.health/100})`;
+  $('barS').style.transform = `scaleX(${G.happiness/100})`;
+  $('barK').style.transform = `scaleX(${G.knowledge/100})`;
+  $('barR').style.transform = `scaleX(${G.relationships/100})`;
+
+  $('moneyVal').textContent = fmtMoney(G.money) + ' ₽';
+}
+
+function updateAge(){
+  $('lifeAge').textContent = G.age;
+}
+
+function renderSiblings(){
+  const bar = $('siblingsBar');
+  let html = '';
+  // Me
+  html += `
+    <div class="sib me">
+      <div class="flag">${G.country.f}</div>
+      <div class="nm">${G.name}</div>
+      <div class="ag">${G.age}</div>
+    </div>
+  `;
+  // 4 siblings
+  for (const s of G.siblings){
+    const age = s.isDead ? '†' : s.currentAge;
+    html += `
+      <div class="sib">
+        <div class="flag">${s.country.f}</div>
+        <div class="nm">${s.name}</div>
+        <div class="ag">${age}</div>
+      </div>
+    `;
+  }
+  bar.innerHTML = html;
+}
+
+function updateFocusButtons(){
+  document.querySelectorAll('.focus-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.focus === G.focus);
+    b.disabled = G.age < 3;
+  });
+  $('focusLabel').textContent = G.age < 3 ? 'В детстве фокус не выбирают' : 'Фокус этого года';
+}
+
+function updateNextButton(){
+  const btn = $('nextYearBtn');
+  if (!btn) return;
+  btn.disabled = G.age >= G.maxAge || paused;
+}
+
+/* ============================================================
+   TICK YEAR
+   ============================================================ */
+function tickYear(){
+  if (!G || G.isDead || paused) return;
+
+  // Apply focus
+  if (G.age >= 3){
+    const focus = FOCUSES[G.focus];
+    if (focus.eff.health) G.health += focus.eff.health;
+    if (focus.eff.happiness) G.happiness += focus.eff.happiness;
+    if (focus.eff.knowledge) G.knowledge += focus.eff.knowledge;
+    if (focus.eff.relationships) G.relationships += focus.eff.relationships;
+    if (focus.eff.money) G.money += focus.eff.money;
+  }
+
+  // Aging
+  if (G.age > 40) G.health -= (G.age - 40) * 0.08;
+  if (G.age > 60) G.health -= (G.age - 60) * 0.15;
+  if (G.age < 18) G.knowledge += 1.2;
+  if (G.age > 20 && G.age < 60) G.money += rand(0, 500) + (G.knowledge * 3);
+
+  G.health = clamp(G.health, 0, 100);
+  G.happiness = clamp(G.happiness, 0, 100);
+  G.knowledge = clamp(G.knowledge, 0, 100);
+  G.relationships = clamp(G.relationships, 0, 100);
+
+  G.age++;
+
+  // Advance siblings
+  for (const s of G.siblings){
+    if (s.isDead) continue;
+    s.currentAge++;
+    // Sibling death risk
+    let risk = 0.001;
+    if (s.currentAge >= s.maxAge) risk = 1;
+    else if (s.currentAge > 60) risk = 0.02 + (s.currentAge - 60) * 0.005;
+    else if (s.currentAge > 40) risk = 0.004;
+    if (Math.random() < risk){
+      s.isDead = true;
+      s.deathAge = s.currentAge;
+    }
+  }
+
+  addLog(G.age, getAgeLog(G.age), 'good');
+
+  // Milestone question
+  if ([5, 15, 30, 50, 70].includes(G.age) && !G.milestones[G.age]){
+    G.milestones[G.age] = true;
+    setTimeout(() => showQuestion(G.age), 200);
+  }
+
+  // Check death
+  if (checkDeath()){
+    die();
+    return;
+  }
+
+  // Random event
+  maybeEvent();
+
+  updateStats();
+  updateAge();
+  renderSiblings();
+  updateFocusButtons();
+  updateNextButton();
+
+  // Schedule next
+  scheduleYear();
+}
+
+/* ============================================================
+   AGE LOG
+   ============================================================ */
+function getAgeLog(age){
+  if (age <= 1) return pick(['Учитесь ходить. Мир огромный.', 'Первый зуб.']);
+  if (age <= 3) return pick(['Детский сад. Слёзы и новые друзья.', 'Любите мультики и конфеты.']);
+  if (age <= 5) return pick(['Играете во дворе.', 'Учитесь читать по слогам.']);
+  if (age <= 10) return pick(['Школа. Домашка. Перемены.', 'Нашли лучшего друга.', 'Лето, речка, велосипед.']);
+  if (age <= 14) return pick(['Подростковый возраст. Всё сложно.', 'Первые оценки, первые ссоры.']);
+  if (age <= 18) return pick(['Экзамены. Нервы.', 'Выпускной. Взрослая жизнь впереди.', 'Первая серьёзная любовь.']);
+  if (age <= 25) return pick(['Учёба/работа. Поиск себя.', 'Первые серьёзные деньги.', 'Вечеринки с друзьями.']);
+  if (age <= 35) return pick(['Карьера набирает обороты.', 'Семейные заботы.', 'Кредиты и планы.']);
+  if (age <= 45) return pick(['Стабильность. Рутина.', 'Дети растут.', 'Планы на будущее.']);
+  if (age <= 55) return pick(['Кризис среднего возраста.', 'Дети выросли.', 'Больше времени для себя.']);
+  if (age <= 65) return pick(['Подготовка к пенсии.', 'Внуки. Радость.', 'Дача и огород.']);
+  if (age <= 75) return pick(['Пенсия. Спокойные дни.', 'Здоровье — главное.', 'Долгие прогулки.']);
+  return pick(['Каждый день — подарок.', 'Тишина и покой.', 'Внуки звонят по выходным.']);
+}
+
+/* ============================================================
+   DEATH
+   ============================================================ */
+function checkDeath(){
+  if (G.age >= G.maxAge) return true;
+
+  const age = G.age;
+  const im = G.country.im / 1000;
+  let risk = 0;
+
+  if (age === 0) risk = im * 2;
+  else if (age < 5) risk = im * 0.5;
+  else if (age < 15) risk = 0.001;
+  else if (age < 40) risk = 0.0015 + (age - 15) * 0.0001;
+  else if (age < 60) risk = 0.004 + (age - 40) * 0.0008;
+  else if (age < 75) risk = 0.02 + (age - 60) * 0.003;
+  else if (age < 85) risk = 0.08 + (age - 75) * 0.015;
+  else risk = 0.25 + (age - 85) * 0.05;
+
+  if (G.health < 30) risk *= 2;
+  if (G.health < 15) risk *= 3;
+  if (G.family === 'rich') risk *= 0.85;
+
+  return Math.random() < risk;
+}
+
+function die(){
+  G.isDead = true;
+  G.deathAge = G.age;
+  meta.totalDied++;
+  saveMeta();
+
+  endLife();
+
+  addLog(G.age, `💀 Вы умерли в возрасте ${G.age} лет.`, 'death');
+
+  setTimeout(showDeathScreen, 1200);
+}
+
+/* ============================================================
+   DEATH SCREEN
+   ============================================================ */
+function showDeathScreen(){
+  $('lifeScreen').classList.remove('active');
+  $('deathScreen').classList.add('active');
+
+  const icons = ['🕯️','🌹','🕊️','⚰️','🌙'];
+  $('deathIcon').textContent = pick(icons);
+
+  const year = 2026 - G.deathAge;
+  const deathTitle = G.deathAge < 18 ? 'Жизнь оборвалась рано' :
+    G.deathAge < 60 ? 'Жизнь прожита' : G.deathAge < 85 ? 'Долгая жизнь' : 'Долгожитель';
+  $('deathTitle').textContent = deathTitle;
+  $('deathSub').textContent = `${G.name}, ${G.country.f} ${G.country.n} · ${year} — 2026`;
+
+  $('deathSummary').innerHTML = `
+    <div class="sum-row"><span class="k">Возраст смерти</span><span class="v">${G.deathAge} лет</span></div>
+    <div class="sum-row"><span class="k">Страна</span><span class="v">${G.country.f} ${G.country.n}</span></div>
+    <div class="sum-row"><span class="k">Семья</span><span class="v">${G.family === 'rich' ? 'Богатая' : G.family === 'poor' ? 'Бедная' : 'Средний класс'}</span></div>
+    <div class="sum-row"><span class="k">Накопления</span><span class="v gold">${fmtMoney(G.money)} ₽</span></div>
+    <div class="final-stats">
+      <div class="fs-box"><div class="em">❤️</div><div class="n">${Math.round(G.health)}</div><div class="l">Здоровье</div></div>
+      <div class="fs-box"><div class="em">😊</div><div class="n">${Math.round(G.happiness)}</div><div class="l">Счастье</div></div>
+      <div class="fs-box"><div class="em">📚</div><div class="n">${Math.round(G.knowledge)}</div><div class="l">Знания</div></div>
+      <div class="fs-box"><div class="em">👥</div><div class="n">${Math.round(G.relationships)}</div><div class="l">Отношения</div></div>
+    </div>
+  `;
+
+  let cmp = `
+    <div class="compare-item me">
+      <span class="cf">${G.country.f}</span>
+      <div class="ci">
+        <div class="cn">${G.name} (вы)</div>
+        <div class="cm">${G.country.n}</div>
+      </div>
+      <span class="ca">${G.deathAge} лет</span>
+    </div>
+  `;
+  for (const s of G.siblings){
+    const age = s.isDead ? s.deathAge : s.currentAge;
+    cmp += `
+      <div class="compare-item">
+        <span class="cf">${s.country.f}</span>
+        <div class="ci">
+          <div class="cn">${s.name}${s.isDead ? ' †' : ''}</div>
+          <div class="cm">${s.country.n}</div>
+        </div>
+        <span class="ca">${age} лет</span>
+      </div>
+    `;
+  }
+  $('compareList').innerHTML = cmp;
+}
+
+/* ============================================================
+   LOG
+   ============================================================ */
+function addLog(age, text, type){
+  if (!text) return;
+  const logEl = $('lifeLog');
+  const item = document.createElement('div');
+  item.className = 'log-item' + (type ? ' ' + type : '');
+  item.innerHTML = `<div class="age">${age} лет</div>${text}`;
+  logEl.appendChild(item);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+/* ============================================================
+   EVENTS
+   ============================================================ */
+function maybeEvent(){
+  const eligible = EVENTS.filter(e =>
+    G.age >= e.age[0] && G.age <= e.age[1] && !G.eventsSeen.has(e.title)
+  );
+  if (eligible.length === 0) return;
+  if (Math.random() > 0.6) return;
+
+  const event = pick(eligible);
+  G.eventsSeen.add(event.title);
+  showEventModal(event);
+}
+
+function showEventModal(event){
+  paused = true;
+  if (yearTimer) clearTimeout(yearTimer);
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal-card">
+      <div class="modal-head">
+        <span class="modal-icon">${event.icon}</span>
+        <span class="modal-title">Событие · ${G.age} лет</span>
+      </div>
+      <div class="modal-text">${event.text}</div>
+      <div class="modal-choices">
+        ${event.choices.map((c, i) =>
+          `<button class="choice-btn" data-i="${i}">${c.text}</button>`
+        ).join('')}
+      </div>
+    </div>
+  `;
+  document.getElementById('app').appendChild(overlay);
+
+  overlay.querySelectorAll('.choice-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const choice = event.choices[parseInt(btn.dataset.i)];
+      overlay.remove();
+      applyEventResult(event, choice);
+      paused = false;
+      updateNextButton();
+      scheduleYear();
+    });
+  });
+}
+
+function applyEventResult(event, choice){
+  const eff = choice.eff;
+  if (eff.health) G.health += eff.health;
+  if (eff.happiness) G.happiness += eff.happiness;
+  if (eff.knowledge) G.knowledge += eff.knowledge;
+  if (eff.relationships) G.relationships += eff.relationships;
+  if (eff.money) G.money += eff.money;
+
+  G.health = clamp(G.health, 0, 100);
+  G.happiness = clamp(G.happiness, 0, 100);
+  G.knowledge = clamp(G.knowledge, 0, 100);
+  G.relationships = clamp(G.relationships, 0, 100);
+
+  const isBad = (eff.health || 0) < 0 || (eff.happiness || 0) < 0;
+  addLog(G.age, `${event.icon} ${event.text} → ${choice.res}`, isBad ? 'bad' : 'event');
+
+  updateStats();
+}
+
+/* ============================================================
+   MILESTONE QUESTION
+   ============================================================ */
+function showQuestion(age){
+  paused = true;
+  if (yearTimer) clearTimeout(yearTimer);
+
+  const ageQuestions = {
+    5: 'Что для вас сейчас самое важное?',
+    15: 'Кем вы себя видите через 10 лет?',
+    30: 'Что вы цените больше всего в жизни?',
+    50: 'О чём вы жалеете и чему рады?',
+    70: 'Что бы вы сказали себе в 20 лет?'
+  };
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="question-card">
+      <div class="question-label">Вам ${age} лет · Время остановилось</div>
+      <div class="question-text">${ageQuestions[age]}</div>
+      <textarea class="question-input" id="questionInput" placeholder="Напишите пару строк... (необязательно)" rows="3"></textarea>
+      <div class="question-actions">
+        <button class="btn-skip" id="skipQuestion">Пропустить</button>
+        <button class="btn-submit" id="submitQuestion">Записать</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('app').appendChild(overlay);
+
+  const input = document.getElementById('questionInput');
+  input.focus();
+
+  const finish = (text) => {
+    overlay.remove();
+    if (text && text.trim()){
+      G.questionsAnswered[age] = text.trim();
+      addLog(age, `📝 «${text.trim()}»`, 'milestone');
+    } else {
+      addLog(age, `🤔 Вы задумались о жизни...`, 'milestone');
+    }
+    paused = false;
+    updateNextButton();
+    scheduleYear();
+  };
+
+  document.getElementById('skipQuestion').addEventListener('click', () => finish(null));
+  document.getElementById('submitQuestion').addEventListener('click', () => finish(input.value));
+}
+
+/* ============================================================
+   UI BINDINGS
+   ============================================================ */
+// Setup options
+document.querySelectorAll('#eraOptions .setup-opt').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#eraOptions .setup-opt').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    settings.era = b.dataset.era;
+    const hints = {
+      present: 'Мир 2026 года. Реальная статистика ООН, ВОЗ и Всемирного банка.',
+      past: 'Мир 1950–2025. Исторические данные. Войны, эпидемии и другой контекст.',
+      future: 'Мир после 2026. Прогнозы ООН по населению, продолжительности жизни и климату.'
+    };
+    $('eraHint').textContent = hints[settings.era];
+  });
+});
+
+document.querySelectorAll('#modeOptions .setup-opt').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#modeOptions .setup-opt').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    settings.mode = b.dataset.mode;
+    const hints = {
+      births: 'Вероятность страны пропорциональна числу младенцев, рождающихся в ней за год. Индия и Нигерия выпадают чаще.',
+      population: 'Вероятность страны пропорциональна её населению. Каждая страна встречается в соответствии с долей населения.'
+    };
+    $('modeHint').textContent = hints[settings.mode];
+  });
+});
+
+document.querySelectorAll('#durationOptions .setup-opt').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#durationOptions .setup-opt').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    settings.duration = parseInt(b.dataset.duration);
+  });
+});
+
+$('birthBtn').addEventListener('click', () => {
+  startGame();
+});
+
+// Focus buttons
+document.querySelectorAll('.focus-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    if (!G || G.age < 3) return;
+    G.focus = b.dataset.focus;
+    updateFocusButtons();
+  });
+});
+
+// Next year
+$('nextYearBtn').addEventListener('click', () => {
+  if (G && !G.isDead) tickYear();
+});
+
+// Pause
+$('pauseBtn').addEventListener('click', () => {
+  paused = !paused;
+  $('pauseBtn').textContent = paused ? '▶' : '⏸';
+  $('pauseBtn').classList.toggle('active', paused);
+  updateNextButton();
+  if (paused){
+    if (yearTimer) clearTimeout(yearTimer);
+  } else {
+    scheduleYear();
+  }
+});
+
+// Speed
+$('speedBtn').addEventListener('click', () => {
+  speedIndex = (speedIndex + 1) % SPEEDS.length;
+  speedMultiplier = SPEEDS[speedIndex];
+  $('speedBtn').textContent = speedMultiplier + '×';
+  const ind = $('speedIndicator');
+  ind.textContent = speedMultiplier + '×';
+  ind.classList.add('show');
+  setTimeout(() => ind.classList.remove('show'), 800);
+  if (!paused) scheduleYear();
+});
+
+// Auto (toggle auto mode)
+$('autoBtn').addEventListener('click', () => {
+  if (autoTimer){
+    clearInterval(autoTimer);
+    autoTimer = null;
+    $('autoBtn').classList.remove('active');
+    paused = false;
+    updateNextButton();
+    scheduleYear();
+  } else {
+    if (yearTimer) clearTimeout(yearTimer);
+    paused = false;
+    $('autoBtn').classList.add('active');
+    autoTimer = setInterval(() => {
+      if (G && !G.isDead && !paused) tickYear();
+    }, 1500);
+    updateNextButton();
+  }
+});
+
+// New life / home
+$('newLifeBtn').addEventListener('click', () => {
+  $('deathScreen').classList.remove('active');
+  $('setupScreen').classList.add('active');
+});
+
+$('homeBtn').addEventListener('click', () => {
+  $('deathScreen').classList.remove('active');
+  $('setupScreen').classList.add('active');
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+function init(){
+  loadMeta();
+
+  // Default setup option active states
+  document.querySelectorAll('#eraOptions .setup-opt').forEach(b => {
+    b.classList.toggle('active', b.dataset.era === settings.era);
+  });
+  document.querySelectorAll('#modeOptions .setup-opt').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === settings.mode);
+  });
+  document.querySelectorAll('#durationOptions .setup-opt').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.duration) === settings.duration);
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden){
+      // Don't clear; just pause scheduling
+      if (yearTimer) clearTimeout(yearTimer);
+    } else if (G && !G.isDead && !paused){
+      scheduleYear();
+    }
+  });
+}
+
+init();
+
+})();
+</script>
+</body>
+</html>
